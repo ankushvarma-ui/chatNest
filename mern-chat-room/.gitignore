@@ -1,0 +1,10 @@
+# Node
+node_modules/
+package.json
+package-lock.json
+
+# Frontend build folder
+frontend/build/
+
+# Environment variables
+.env

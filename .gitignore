@@ -1,0 +1,8 @@
+# Node
+node_modules/
+
+# Frontend build folder
+frontend/build/
+
+# Environment variables
+.env
