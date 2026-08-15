@@ -12,7 +12,14 @@ const { handleSocket } = require("./socket/socketHandler");
 
 const app = express();
 const server = http.createServer(app);
-const clientOrigins = process.env.CLIENT_URL ? process.env.CLIENT_URL.split(",") : ["http://localhost:3000"];
+const configuredOrigins = process.env.CLIENT_URL ? process.env.CLIENT_URL.split(",") : [];
+const clientOrigins = [...new Set([
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  ...configuredOrigins,
+])];
 
 const io = new Server(server, { cors: { origin: clientOrigins, methods: ["GET", "POST"] } });
 app.use(cors({ origin: clientOrigins, credentials: true }));
@@ -30,4 +37,4 @@ mongoose.connect(mongoUri)
   .catch((error) => console.error("MongoDB connection error:", error.message));
 
 const port = process.env.PORT || 5000;
-server.listen(port, () => console.log(`Server listening on http://localhost:${port}`));
+server.listen(port, "127.0.0.1", () => console.log(`Server listening on http://localhost:${port}`));

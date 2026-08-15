@@ -2,7 +2,7 @@
 
 ChatNest is a real-time chat-room application built with the MERN stack:
 
-- **Frontend:** React.js with `.jsx` components/pages, Bootstrap, and custom CSS.
+- **Frontend:** React.js with `.jsx` components/pages, Bootstrap, custom CSS, and Vite.
 - **Backend:** Node.js, Express, Socket.IO, JWT authentication, and MongoDB/Mongoose.
 - **Realtime communication:** Socket.IO for room membership, messaging, typing indicators, and live user lists.
 
@@ -23,6 +23,7 @@ mern-chat-room/
       pages/          `.jsx` room browser and chat pages
       api.js          REST API helper
       socket.js       Socket.IO client helper
+    vite.config.js    local-only Vite server configuration
 ```
 
 ## Implemented Features
@@ -95,13 +96,13 @@ npm install
 npm run dev
 ```
 
-The frontend runs at `http://localhost:3000`. `npm start` remains available as an equivalent Create React App command.
+The Vite frontend runs locally at `http://127.0.0.1:5173`. Its Vite configuration binds only to `127.0.0.1`, so it is not exposed on the local network.
 
-For a non-local backend, set both variables in `frontend/.env.local`:
+Keep the frontend local by setting `frontend/.env.local` to:
 
 ```env
-REACT_APP_API_URL=https://your-api.example.com
-REACT_APP_SOCKET_URL=https://your-api.example.com
+VITE_API_URL=http://127.0.0.1:5000
+VITE_SOCKET_URL=http://127.0.0.1:5000
 ```
 
 ## API Reference
