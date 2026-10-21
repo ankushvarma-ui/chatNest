@@ -13,10 +13,17 @@ function verifyToken(token) {
 function requireAuth(req, res, next) {
   try {
     const header = req.headers.authorization || "";
-    req.auth = verifyToken(header.startsWith("Bearer ") ? header.slice(7) : null);
+    req.auth = verifyToken(
+      header.startsWith("Bearer ") ? header.slice(7) : null,
+    );
     next();
   } catch (error) {
-    res.status(401).json({ error: "AUTH_REQUIRED", message: "A valid room token is required." });
+    res
+      .status(401)
+      .json({
+        error: "AUTH_REQUIRED",
+        message: "A valid room token is required.",
+      });
   }
 }
 

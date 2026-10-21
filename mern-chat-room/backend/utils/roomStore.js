@@ -18,14 +18,25 @@ function scheduleEmptyCleanup(room) {
 async function prepareRoom({ room, username, password }) {
   let entry = rooms.get(key(room));
   if (!entry) {
-    entry = { name: room, passwordHash: password ? await bcrypt.hash(password, 10) : null, users: new Map() };
+    entry = {
+      name: room,
+      passwordHash: password ? await bcrypt.hash(password, 10) : null,
+      users: new Map(),
+    };
     rooms.set(key(room), entry);
     scheduleEmptyCleanup(room);
-  } else if (entry.passwordHash && !(await bcrypt.compare(password || "", entry.passwordHash))) {
+  } else if (
+    entry.passwordHash &&
+    !(await bcrypt.compare(password || "", entry.passwordHash))
+  ) {
     return { error: "ROOM_PASSWORD_INCORRECT" };
   }
   if (entry.users.size >= MAX_ROOM_USERS) return { error: "ROOM_FULL" };
-  if ([...entry.users.values()].some((user) => user.username.toLowerCase() === username.toLowerCase())) {
+  if (
+    [...entry.users.values()].some(
+      (user) => user.username.toLowerCase() === username.toLowerCase(),
+    )
+  ) {
     return { error: "USERNAME_TAKEN" };
   }
   return { room: entry };
@@ -36,7 +47,12 @@ function addUser(room, socketId, username) {
   if (!entry) return { error: "ROOM_NOT_FOUND" };
   if (entry.users.has(socketId)) return { room: entry };
   if (entry.users.size >= MAX_ROOM_USERS) return { error: "ROOM_FULL" };
-  if ([...entry.users.values()].some((user) => user.username.toLowerCase() === username.toLowerCase())) return { error: "USERNAME_TAKEN" };
+  if (
+    [...entry.users.values()].some(
+      (user) => user.username.toLowerCase() === username.toLowerCase(),
+    )
+  )
+    return { error: "USERNAME_TAKEN" };
   entry.users.set(socketId, { username, sentAt: [] });
   return { room: entry };
 }
@@ -58,7 +74,11 @@ function getUsernames(room) {
 function listRooms() {
   return [...rooms.values()]
     .filter((room) => room.users.size > 0)
-    .map((room) => ({ name: room.name, userCount: room.users.size, hasPassword: Boolean(room.passwordHash) }))
+    .map((room) => ({
+      name: room.name,
+      userCount: room.users.size,
+      hasPassword: Boolean(room.passwordHash),
+    }))
     .sort((left, right) => left.name.localeCompare(right.name));
 }
 
@@ -67,9 +87,21 @@ function recordMessage(room, socketId) {
   if (!user) return { allowed: false, retryAfter: 5 };
   const now = Date.now();
   user.sentAt = user.sentAt.filter((timestamp) => now - timestamp < 5000);
-  if (user.sentAt.length >= 5) return { allowed: false, retryAfter: Math.ceil((5000 - (now - user.sentAt[0])) / 1000) };
+  if (user.sentAt.length >= 5)
+    return {
+      allowed: false,
+      retryAfter: Math.ceil((5000 - (now - user.sentAt[0])) / 1000),
+    };
   user.sentAt.push(now);
   return { allowed: true };
 }
 
-module.exports = { MAX_ROOM_USERS, addUser, getUsernames, listRooms, prepareRoom, recordMessage, removeUser };
+module.exports = {
+  MAX_ROOM_USERS,
+  addUser,
+  getUsernames,
+  listRooms,
+  prepareRoom,
+  recordMessage,
+  removeUser,
+};
